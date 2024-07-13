@@ -14,9 +14,21 @@ import {
   import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useState } from "react"
 import { Terminal } from "lucide-react"
+import axiosConfig from "../../../axiosConfig"
 
-  export function DeleteAlert() {
+  export function DeleteAlert({idProduto}: {idProduto: number}) {
 
+    const deleteProduct = async() =>{
+        try {
+            await axiosConfig.delete('/produto/' + idProduto).then((response) => {
+                toast.success("Produto deletado com sucesso")
+                window.location.reload()
+            })
+        } catch (error) {
+            console.error(error)
+            toast.error("Erro ao deletar produto")
+        }
+    }
 
     return (
       <AlertDialog>
@@ -32,7 +44,7 @@ import { Terminal } from "lucide-react"
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={()=>toast.success("Produto deletado com sucesso")}>Deletar</AlertDialogAction>
+            <AlertDialogAction onClick={deleteProduct}>Deletar</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

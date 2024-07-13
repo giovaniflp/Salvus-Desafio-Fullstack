@@ -19,7 +19,7 @@ router.post('/', (req, res) => {
 
 // READ - Obter todos os produtos
 router.get('/', (req, res) => {
-    connection.query('SELECT * FROM produto', (err, results) => {
+    connection.query('SELECT * FROM Produto', (err, results) => {
       if (err) {
         res.status(500).send(err);
       } else {
@@ -31,7 +31,7 @@ router.get('/', (req, res) => {
 // READ - Obter um produto pelo ID
 router.get('/:id', (req, res) => {
     const { id } = req.params;
-    connection.query('SELECT * FROM produto WHERE id = ?', [id], (err, results) => {
+    connection.query('SELECT * FROM Produto WHERE id = ?', [id], (err, results) => {
       if (err) {
         res.status(500).send(err);
       } else if (results.length === 0) {
@@ -46,7 +46,7 @@ router.get('/:id', (req, res) => {
 router.put('/:id', (req, res) => {
     const { id } = req.params;
     const { nome, descricao, preco } = req.body;
-    const query = 'UPDATE produto SET nome = ?, descricao = ?, preco = ? WHERE id = ?';
+    const query = 'UPDATE Produto SET nome = ?, descricao = ?, preco = ?, data_criacao = CURRENT_TIMESTAMP WHERE id = ?';
     connection.query(query, [nome, descricao, preco, id], (err, results) => {
       if (err) {
         res.status(500).send(err);
@@ -61,7 +61,7 @@ router.put('/:id', (req, res) => {
   // DELETE - Remover um produto pelo ID
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
-    connection.query('DELETE FROM produto WHERE id = ?', [id], (err, results) => {
+    connection.query('DELETE FROM Produto WHERE id = ?', [id], (err, results) => {
       if (err) {
         res.status(500).send(err);
       } else if (results.affectedRows === 0) {

@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link"
 
 import {
@@ -9,6 +10,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
+import { AddProduct } from "./AddProduct"
 
 export function TopBar({name}: {name: string}) {
   return (
@@ -25,7 +27,7 @@ export function TopBar({name}: {name: string}) {
         </BreadcrumbItem>
       </BreadcrumbList>
       <div className="pr-4">
-        <Button className="bg-green-500">Adicionar</Button>
+        <AddProduct></AddProduct>
       </div>
     </Breadcrumb>
   )

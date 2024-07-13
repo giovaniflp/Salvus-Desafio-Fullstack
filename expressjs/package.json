@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "docker-up": "docker-compose up",
+    "start": "node ./bin/www",
+    "docker-start": "npm run docker-up && npm start"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
