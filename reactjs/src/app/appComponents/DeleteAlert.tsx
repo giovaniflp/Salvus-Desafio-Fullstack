@@ -22,7 +22,9 @@ import axiosConfig from "../../../axiosConfig"
         try {
             await axiosConfig.delete('/produto/' + idProduto).then((response) => {
                 toast.success("Produto deletado com sucesso")
-                window.location.reload()
+                setTimeout(() => {
+                  window.location.reload();
+              }, 3000);
             })
         } catch (error) {
             console.error(error)

@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const connection = require('../db');
 
-// Endpointe: /produto
+// Endpoint: /produto
 
 // Criando um produto 
 router.post('/', (req, res) => {
@@ -19,14 +19,28 @@ router.post('/', (req, res) => {
 
 // READ - Obter todos os produtos
 router.get('/', (req, res) => {
-    connection.query('SELECT * FROM Produto', (err, results) => {
-      if (err) {
-        res.status(500).send(err);
-      } else {
-        res.json(results);
-      }
-    });
+  const page = parseInt(req.query.page) || 1; // Página atual, padrão 1
+  const limit = 6; // Número de itens por página
+  const offset = (page - 1) * limit; // Calcular offset
+
+  connection.query('SELECT * FROM Produto LIMIT ? OFFSET ?', [limit, offset], (err, results) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.json(results);
+    }
   });
+});
+
+router.get('/allProducts', (req, res) => {
+  connection.query('SELECT * FROM Produto', (err, results) => {
+    if (err) {
+      res.status(500).send
+    } else {
+      res.json(results);
+    }
+})
+})
 
 // READ - Obter um produto pelo ID
 router.get('/:id', (req, res) => {
@@ -43,11 +57,30 @@ router.get('/:id', (req, res) => {
   });
 
   // UPDATE - Atualizar um produto pelo ID
-router.put('/:id', (req, res) => {
+  router.patch('/:id', (req, res) => {
     const { id } = req.params;
-    const { nome, descricao, preco } = req.body;
-    const query = 'UPDATE Produto SET nome = ?, descricao = ?, preco = ?, data_criacao = CURRENT_TIMESTAMP WHERE id = ?';
-    connection.query(query, [nome, descricao, preco, id], (err, results) => {
+    const updates = req.body;
+    let fields = [];
+    let values = [];
+  
+    for (const [key, value] of Object.entries(updates)) {
+      // Ignorar campos nulos, undefined, vazios ("") ou zerados(0)
+      if (value !== null && value !== undefined && value !== "" && value != 0) {
+        fields.push(`${key} = ?`);
+        values.push(value);
+      }
+    }
+  
+    if (fields.length > 0) {
+      fields.push('data_criacao = CURRENT_TIMESTAMP');
+    } else {
+      return res.status(400).send('Nenhum campo válido para atualizar');
+    }
+  
+    const query = `UPDATE Produto SET ${fields.join(', ')} WHERE id = ?`;
+    values.push(id);
+  
+    connection.query(query, values, (err, results) => {
       if (err) {
         res.status(500).send(err);
       } else if (results.affectedRows === 0) {
@@ -57,7 +90,7 @@ router.put('/:id', (req, res) => {
       }
     });
   });
-
+  
   // DELETE - Remover um produto pelo ID
 router.delete('/:id', (req, res) => {
     const { id } = req.params;

@@ -4,12 +4,33 @@ services:
     container_name: mysql
     restart: always
     environment:
+      MYSQLHOST: localhost
+      MYSQLPASSWORD: salvus
+      MYSQLPORT: 3306
+      MYSQLUSER: root
+      MYSQL_DATABASE: salvus
       MYSQL_ROOT_PASSWORD: salvus
     ports:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  app:
+    build: .
+    container_name: express_app
+    restart: always
+    ports:
+      - "3030:3030"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: salvus
+      DB_NAME: salvus
+      DB_PORT: 3306
+    volumes:
+      - .:/usr/src/app
 
 volumes:
   db_data:

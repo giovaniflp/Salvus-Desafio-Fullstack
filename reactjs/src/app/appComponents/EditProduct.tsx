@@ -30,32 +30,26 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { set } from "date-fns"
+import { Textarea } from "@/components/ui/textarea"
 
 const FormSchema = z.object({
-    nome: z.string().min(1, {
-        message: "Username must be at least 2 characters.",
-      }),
-      descricao: z.string().min(1, {
-          message: "Descrição must be at least 2 characters.",
-      }),
-      preco: z.coerce.number().min(1, {
-          message: "Preço must be at least 1.",
-      })
+    nome: z.string().nullable().optional(),
+      descricao: z.string().nullable().optional(),
+      preco: z.coerce.number().nullable().optional()
   })
 
   export function EditProduct({idProduto}: {idProduto: number}) {
 
-    const[nome, setNome] = useState("")
-    const[descricao, setDescricao] = useState("")
-    const[preco, setPreco] = useState(0)
+    const[nome, setNome] = useState(null)
+    const[descricao, setDescricao] = useState(null)
+    const[preco, setPreco] = useState(null)
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            nome: nome,
-            descricao: descricao,
-            preco: preco
+            nome: null,
+            descricao: null,
+            preco: null
         },
       })
 
@@ -74,16 +68,19 @@ const FormSchema = z.object({
 
     useEffect(()=>{
         getProductData()
-    },[preco != 0 && descricao != "" && nome != ""])
-    
+    },[preco != null && descricao != null && nome != null])
+
       function onSubmit(data: z.infer<typeof FormSchema>) {
-        axiosConfig.put('/produto/' + idProduto, data).then((response) => {
+        console.log(data)
+        axiosConfig.patch('/produto/' + idProduto, data).then((response) => {
             console.log(response.data)
             toast.success("Produto editado com sucesso")
-            window.location.reload()
+            setTimeout(() => {
+              window.location.reload();
+          }, 3000);
         }).catch((error) => {
             console.error(error)
-            toast.error("Erro ao editar produto")
+            toast.error("Produto não editado")
         })
       }
 
@@ -94,8 +91,8 @@ const FormSchema = z.object({
         </AlertDialogTrigger>
         <AlertDialogContent className="flex justify-center">
           <AlertDialogHeader>
-            <AlertDialogTitle>Deseja editar o produto?</AlertDialogTitle>
-            <AlertDialogDescription className="flex justify-center">
+            <AlertDialogTitle className="text-center">Deseja editar o produto?</AlertDialogTitle>
+            <AlertDialogDescription className="flex justify-center w-96">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
                         <FormField
@@ -118,7 +115,7 @@ const FormSchema = z.object({
                             <FormItem>
                             <FormLabel>Descrição</FormLabel>
                             <FormControl>
-                                <Input placeholder={"Atual: " + descricao} {...field}/>
+                                <Textarea placeholder={"Atual: " + descricao} {...field}/>
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -139,7 +136,7 @@ const FormSchema = z.object({
                         />
                         <AlertDialogFooter className="flex justify-center">
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction type="submit" className="bg-green-500">Editar Produto</AlertDialogAction>
+                            <AlertDialogAction type="submit" className="bg-orange-500">Editar Produto</AlertDialogAction>
                         </AlertDialogFooter>
                     </form>
                 </Form>

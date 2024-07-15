@@ -2,7 +2,6 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
 const connection = require('./db');
 const cors = require('cors');
 
@@ -15,7 +14,6 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -44,9 +42,9 @@ app.use(function(err, req, res, next) {
 const createTableSQL = `
   CREATE TABLE IF NOT EXISTS Produto (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    descricao TEXT,
-    preco DECIMAL(10, 2) NOT NULL,
+    nome VARCHAR(50) NOT NULL,
+    descricao VARCHAR(500),
+    preco DECIMAL(65, 2) NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )
 `;

@@ -1,3 +1,5 @@
+"use client"
+
 import {
     AlertDialog,
     AlertDialogAction,
@@ -29,29 +31,29 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+
 
 const FormSchema = z.object({
-    nome: z.string().min(2, {
-      message: "Username must be at least 2 characters.",
+    nome: z.string().min(1, {
+      message: "Nome precisa ter no mínimo 1 caractere",
     }),
-    descricao: z.string().min(2, {
-        message: "Descrição must be at least 2 characters.",
+    descricao: z.string().min(1, {
+        message: "Descrição precisa ter no mínimo 1 caractere",
     }),
     preco: z.coerce.number().min(1, {
-        message: "Preço must be at least 1.",
+        message: "Preço precisa ser maior que 0.00",
     })
   })
 
   export function AddProduct() {
-
-    const [isOpen, setIsOpen] = useState(false)
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
             nome: "",
             descricao: "",
-            preco: 0
+            preco: null
         },
       })
     
@@ -59,7 +61,9 @@ const FormSchema = z.object({
         axiosConfig.post('/produto', data).then((response) => {
             console.log(response.data)
             toast.success("Produto adicionado com sucesso")
-            window.location.reload()
+            setTimeout(() => {
+              window.location.reload();
+          }, 3000);
         }).catch((error) => {
             console.error(error)
             toast.error("Erro ao adicionar produto")
@@ -69,12 +73,12 @@ const FormSchema = z.object({
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button className="bg-green-500 text-white" variant="outline">Adicionar</Button>
+          <Button className="bg-green-500 text-white" variant="outline">Adicionar novo produto</Button>
         </AlertDialogTrigger>
         <AlertDialogContent className="flex justify-center">
           <AlertDialogHeader>
-            <AlertDialogTitle>Deseja adicionar um novo produto?</AlertDialogTitle>
-            <AlertDialogDescription className="flex justify-center">
+            <AlertDialogTitle className="text-center">Deseja adicionar um novo produto?</AlertDialogTitle>
+            <AlertDialogDescription className="flex justify-center w-96">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
                         <FormField
@@ -97,7 +101,7 @@ const FormSchema = z.object({
                             <FormItem>
                             <FormLabel>Descrição</FormLabel>
                             <FormControl>
-                                <Input placeholder="Serve para tratar dores musculares..." {...field} />
+                                <Textarea placeholder="Serve para tratar dores musculares..." {...field}/>
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -110,7 +114,7 @@ const FormSchema = z.object({
                             <FormItem>
                             <FormLabel>Preço</FormLabel>
                             <FormControl>
-                                <Input type="number" placeholder="R$ 12.50" {...field} />
+                                <Input className="" type="number" placeholder="R$ 12.50" {...field} />
                             </FormControl>
                             <FormMessage />
                             </FormItem>
